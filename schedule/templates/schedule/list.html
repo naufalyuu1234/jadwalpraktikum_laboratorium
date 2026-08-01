@@ -1,0 +1,110 @@
+{% extends 'schedule/base.html' %} {% load static %} {% block title %}Daftar
+Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'schedule/css/list.css' %}" />
+{% endblock %} {% block content %}
+<div class="page-shell">
+  <section class="hero-layout">
+    <div class="hero-copy">
+      <p
+        class="hero-kicker"
+        style="color: black; font-weight: bold; font-family: Arial, sans-serif"
+      >
+        Take your <span style="color: coral">knowledge</span> a degree further
+      </p>
+      <h2 class="hero-title">Find the right schedule for you</h2>
+      <p class="hero-subtitle">
+        Kelola jadwal praktikum, buka detail sesi, dan lakukan booking ruang
+        secara rapi, jelas, dan terstruktur untuk mendukung operasional
+        laboratorium.
+      </p>
+
+      <div class="hero-actions">
+        {% if can_create_schedule %}
+        <a
+          class="button button-primary hero-button"
+          href="{% url 'schedule:create' %}"
+        >
+          Tambah Jadwal
+        </a>
+        {% endif %}
+        <a class="button button-link" href="#schedule-grid">View jadwal</a>
+      </div>
+
+      <div class="stats-row">
+        <article class="stat-card stat-card-soft">
+          <span class="stat-label">subjects</span>
+          <strong>{{ schedule_count }}</strong>
+        </article>
+        <article class="stat-card stat-card-accent">
+          <span class="stat-label">rooms</span>
+          <strong>{{ room_count }}</strong>
+        </article>
+        <article class="stat-card stat-card-warning">
+          <span class="stat-label">bookings</span>
+          <strong>{{ booking_count }}</strong>
+        </article>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="visual-figure">
+        <span class="visual-star visual-star-left"></span>
+        <span class="visual-star visual-star-right"></span>
+        <span class="visual-cloud"></span>
+        <span class="visual-pencil"></span>
+        <span class="visual-person"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-section" id="schedule-grid">
+    <div class="section-headline">
+      <div>
+        <p class="hero-kicker">Course schedule</p>
+        <h3>Daftar Jadwal Praktikum</h3>
+      </div>
+      <span class="section-pill">{{ schedules|length }} sesi</span>
+    </div>
+
+    <div class="grid">
+      {% for schedule in schedules %}
+      <article class="card schedule-card">
+        <div class="card-top">
+          <div>
+            <p class="eyebrow">{{ schedule.room }}</p>
+            <h3>{{ schedule.title }}</h3>
+          </div>
+          <span class="badge">{{ schedule.start_time|date:"d M Y" }}</span>
+        </div>
+
+        <p class="muted">
+          {{ schedule.start_time|date:"H:i" }} -
+          {{schedule.end_time|date:"H:i"}}
+        </p>
+        <p class="muted">Asisten: {{ schedule.assistant }}</p>
+
+        <div class="card-actions">
+          <a
+            class="button button-primary"
+            href="{% url 'schedule:detail' schedule.id %}"
+            >Lihat detail</a
+          >
+          <a
+            class="button button-secondary"
+            href="{% url 'schedule:book' schedule.id %}"
+            >Booking</a
+          >
+        </div>
+      </article>
+      {% empty %}
+      <article class="card empty-state">
+        <h3>Belum ada jadwal</h3>
+        <p class="muted">
+          Tambahkan data jadwal langsung dari UI jika kamu punya akses asisten.
+        </p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

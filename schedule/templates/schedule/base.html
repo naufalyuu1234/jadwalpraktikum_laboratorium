@@ -1,0 +1,61 @@
+{% load static %}
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Sistem Penjadwalan Praktikum{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'schedule/css/base.css' %}" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <div class="status-chip" aria-label="Status sistem">
+            <span class="status-dot"></span>
+            <span>available for praktikum</span>
+          </div>
+        </div>
+
+        <nav class="nav nav-center" aria-label="Navigasi utama">
+          <div class="nav-logo">
+            <img src="{% static 'assets/navbar-icon.png' %}" alt="Logo" />
+          </div>
+          <a href="{% url 'schedule:list' %}">Jadwal</a>
+          <a href="{% url 'schedule:create' %}">Tambah Jadwal</a>
+          <a href="/admin/">Admin</a>
+          <a href="#">Kontak</a>
+          <a href="#">FAQ</a>
+        </nav>
+
+        <div class="header-right">
+          {% if user.is_authenticated %}
+          <a
+            class="status-chip header-action"
+            href="{% url 'authentication:logout' %}"
+          >
+            Logout
+          </a>
+          {% else %}
+          <a
+            class="status-chip header-action"
+            href="{% url 'authentication:login' %}"
+          >
+            Login
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+    <main class="container main-content">
+      {% if messages %}
+      <section class="messages">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </section>
+      {% endif %} {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

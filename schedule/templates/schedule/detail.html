@@ -1,0 +1,51 @@
+{% extends 'schedule/base.html' %} {% load static %} {% block title %}Detail
+Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'schedule/css/detail.css' %}" />
+{% endblock %} {% block content %}
+<div class="detail-page">
+  <div class="container">
+    <section class="card detail-hero">
+      <div>
+        <p class="eyebrow">{{ schedule.room }}</p>
+        <h2>{{ schedule.title }}</h2>
+        <p class="muted">
+          {{ schedule.start_time|date:"d M Y, H:i" }} -
+          {{schedule.end_time|date:"H:i" }}
+        </p>
+        <p class="muted">Asisten: {{ schedule.assistant }}</p>
+      </div>
+      <a
+        class="button button-primary"
+        href="{% url 'schedule:book' schedule.id %}"
+        >Booking sekarang</a
+      >
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h3>Daftar Booking</h3>
+        <span class="badge">{{ attendances|length }} orang</span>
+      </div>
+
+      <div class="attendance-list">
+        {% for attendance in attendances %}
+        <div class="attendance-item">
+          <div>
+            <p class="attendance-kicker">Mahasiswa booking</p>
+            <strong>{{ attendance.user }}</strong>
+            <p class="muted">
+              {{ attendance.booking_time|default:'Belum tercatat' }}
+            </p>
+          </div>
+          <span class="status status-{{ attendance.status|lower }}"
+            >{{ attendance.status }}</span
+          >
+        </div>
+        {% empty %}
+        <p class="muted">Belum ada booking untuk jadwal ini.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

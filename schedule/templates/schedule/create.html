@@ -1,0 +1,48 @@
+{% extends 'schedule/base.html' %} {% load static %} {% block title %}Tambah
+Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'schedule/css/create.css' %}" />
+{% endblock %} {% block content %}
+<section class="card form-shell">
+  <div class="form-intro">
+    <p class="eyebrow">Input data langsung</p>
+    <h2>Tambah Jadwal Praktikum</h2>
+    <p class="muted">
+      Form ini menggantikan kebutuhan input lewat admin Django untuk user
+      asisten.
+    </p>
+  </div>
+
+  <form method="post" class="form-grid">
+    {% csrf_token %} {% if form.non_field_errors %}
+    <div class="message message-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="form-field">
+      <label for="id_title">Judul</label>
+      {{ form.title }} {{ form.title.errors }}
+    </div>
+
+    <div class="form-field">
+      <label for="id_room">Ruangan</label>
+      {{ form.room }} {{ form.room.errors }}
+    </div>
+
+    <div class="form-field">
+      <label for="id_start_time">Waktu Mulai</label>
+      {{ form.start_time }} {{ form.start_time.errors }}
+    </div>
+
+    <div class="form-field">
+      <label for="id_end_time">Waktu Selesai</label>
+      {{ form.end_time }} {{ form.end_time.errors }}
+    </div>
+
+    <div class="form-actions">
+      <a class="button button-secondary" href="{% url 'schedule:list' %}"
+        >Batal</a
+      >
+      <button class="button button-primary" type="submit">Simpan Jadwal</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

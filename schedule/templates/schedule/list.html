@@ -74,7 +74,10 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
             <p class="eyebrow">{{ schedule.room }}</p>
             <h3>{{ schedule.title }}</h3>
           </div>
-          <span class="badge">{{ schedule.start_time|date:"d M Y" }}</span>
+          <div class="card-badges">
+            <span class="badge">{{ schedule.start_time|date:"d M Y" }}</span>
+            <span class="badge badge-soft">{{ schedule.target_class }}</span>
+          </div>
         </div>
 
         <p class="muted">

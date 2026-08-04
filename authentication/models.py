@@ -9,6 +9,7 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='praktikan')
     npm = models.CharField(max_length=20, unique=True, blank=True, null=True, db_index=True)
     assistant_id = models.CharField(max_length=20, unique=True, blank=True, null=True, db_index=True)
+    kelas = models.CharField(max_length=10, blank=True, help_text="Contoh: 2IA06")
 
     def __str__(self):
         return self.get_full_name() or self.username

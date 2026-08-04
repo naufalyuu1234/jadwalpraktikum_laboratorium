@@ -13,12 +13,45 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
           {{schedule.end_time|date:"H:i" }}
         </p>
         <p class="muted">Asisten: {{ schedule.assistant }}</p>
+        <p class="muted">Kelas target: {{ schedule.target_class }}</p>
       </div>
-      <a
-        class="button button-primary"
-        href="{% url 'schedule:book' schedule.id %}"
-        >Booking sekarang</a
-      >
+      <div class="detail-actions">
+        <a
+          class="button button-primary"
+          href="{% url 'schedule:book' schedule.id %}"
+          >Booking sekarang</a
+        >
+        {% if can_manage_schedule %}
+        <form
+          method="post"
+          action="{% url 'schedule:refresh_participants' schedule.id %}"
+          onsubmit="
+            return confirm(
+              'Refresh peserta akan menambah peserta baru dan mempertahankan booking yang sudah ada. Lanjutkan?',
+            );
+          "
+        >
+          {% csrf_token %}
+          <button class="button button-secondary" type="submit">
+            Refresh peserta
+          </button>
+        </form>
+        <form
+          method="post"
+          action="{% url 'schedule:hard_wipe' schedule.id %}"
+          onsubmit="
+            return confirm(
+              'Hard wipe akan menghapus semua attendance lalu membuat ulang dari kelas target. Lanjutkan?',
+            );
+          "
+        >
+          {% csrf_token %}
+          <button class="button button-secondary" type="submit">
+            Hard wipe total
+          </button>
+        </form>
+        {% endif %}
+      </div>
     </section>
 
     <section class="card">

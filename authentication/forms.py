@@ -45,10 +45,25 @@ class AccountRegisterForm(UserCreationForm):
         required=False,
         widget=forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email aktif'}),
     )
+    kelas = forms.CharField(
+        max_length=10,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Contoh: 2IA07'}),
+    )
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'role', 'identifier', 'password1', 'password2')
+        fields = ('first_name', 'last_name', 'email', 'role', 'identifier', 'kelas', 'password1', 'password2')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        role = cleaned_data.get('role')
+        kelas = (cleaned_data.get('kelas') or '').strip()
+
+        if role == 'praktikan' and not kelas:
+            self.add_error('kelas', 'Kelas wajib diisi untuk akun praktikan.')
+
+        return cleaned_data
 
     def clean_identifier(self):
         identifier = self.cleaned_data['identifier'].strip()
@@ -66,10 +81,12 @@ class AccountRegisterForm(UserCreationForm):
         user = super().save(commit=False)
         identifier = self.cleaned_data['identifier']
         role = self.cleaned_data['role']
+        kelas = (self.cleaned_data.get('kelas') or '').strip()
 
         user.role = role
         user.npm = identifier if role == 'praktikan' else None
         user.assistant_id = identifier if role == 'asisten' else None
+        user.kelas = kelas if role == 'praktikan' else ''
 
         base_username = f'{role}_{identifier}'
         username = base_username

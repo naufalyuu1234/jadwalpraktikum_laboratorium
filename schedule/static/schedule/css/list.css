@@ -430,6 +430,18 @@ h2.hero-title {
   gap: 0.9rem;
 }
 
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.badge-soft {
+  background: rgba(255, 255, 255, 0.84);
+  border-color: rgba(17, 17, 17, 0.12);
+}
+
 .schedule-card h3,
 .empty-state h3,
 .grid-section .eyebrow,

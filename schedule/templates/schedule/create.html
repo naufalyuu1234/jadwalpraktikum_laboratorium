@@ -28,6 +28,11 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
     </div>
 
     <div class="form-field">
+      <label for="id_target_class">Kelas Target</label>
+      {{ form.target_class }} {{ form.target_class.errors }}
+    </div>
+
+    <div class="form-field">
       <label for="id_start_time">Waktu Mulai</label>
       {{ form.start_time }} {{ form.start_time.errors }}
     </div>

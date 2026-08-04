@@ -41,6 +41,14 @@ Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
       <div class="form-field">
         <label for="id_role">Jenis Akun</label>
         {{ form.role }} {{ form.role.errors }}
+        <p class="field-hint">
+          Pilih praktikan jika ingin mengisi kelas.
+        </p>
+      </div>
+
+      <div class="form-field conditional-field" id="kelas-field" hidden>
+        <label for="id_kelas">Kelas</label>
+        {{ form.kelas }} {{ form.kelas.errors }}
       </div>
 
       <div class="form-field">
@@ -61,11 +69,36 @@ Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
       <button class="button button-primary login-button" type="submit">
         Buat Akun
       </button>
-      <p class="muted" style="text-align: center; margin: 0.25rem 0 0;">
+      <p class="muted" style="text-align: center; margin: 0.25rem 0 0">
         Sudah punya akun?
         <a href="{% url 'authentication:login' %}">Login di sini</a>
       </p>
     </form>
   </div>
 </section>
+
+<script>
+  (function () {
+    const roleField = document.getElementById("id_role");
+    const kelasField = document.getElementById("kelas-field");
+    const kelasInput = document.getElementById("id_kelas");
+
+    if (!roleField || !kelasField) {
+      return;
+    }
+
+    const syncKelasField = () => {
+      const isPraktikan = roleField.value === "praktikan";
+      kelasField.hidden = !isPraktikan;
+      kelasField.setAttribute("aria-hidden", String(!isPraktikan));
+
+      if (!isPraktikan && kelasInput) {
+        kelasInput.value = "";
+      }
+    };
+
+    roleField.addEventListener("change", syncKelasField);
+    syncKelasField();
+  })();
+</script>
 {% endblock %}

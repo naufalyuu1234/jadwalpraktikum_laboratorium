@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 class Schedule(models.Model):
     title = models.CharField(max_length=200)
@@ -13,58 +14,38 @@ class Schedule(models.Model):
         return f"{self.title} - {self.target_class} ({self.room})"
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None # cek apakah ini data edit atau baru
+        is_new = self.pk is None # Cek apakah ini data edit atau baru
 
-        # Jika proses edit, ambil data lama dari database
+        # Ambil data target_class lama secara aman jika ini proses edit
         old_target_class = None
         if not is_new:
-            old_instance = Schedule.objects.get(pk=self.pk)
+            old_instance = Schedule.objects.filter(pk=self.pk).first()
             if old_instance:
                 old_target_class = old_instance.target_class
 
+        # Simpan jadwal utama terlebih dahulu
         super().save(*args, **kwargs)
 
+        # Jalankan Hard Wipe jika jadwal baru ATAU target_class diubah
         if is_new or (old_target_class != self.target_class):
             self.refresh_attendance_roster()
 
-    def refresh_attendance_roster(self):
-        # Hard wipe: hapus semua attendance lalu bangun ulang dari kelas target saat ini.
+    def refresh_attendance_roster(self):    
+        # 1. Hard Wipe: Hapus presensi lama yang terikat dengan jadwal ini
         self.attendances.all().delete()
 
-        from authentication.models import CustomUser
+        # 2. Ambil model User secara dinamis
+        User = get_user_model()
 
-        students = CustomUser.objects.filter(kelas=self.target_class, is_staff=False)
+        # 3. Cari praktikan dengan kelas yang sesuai (Gunakan Uppercase jika choice di model 'PRAKTIKAN')
+        students = User.objects.filter(kelas=self.target_class, role='PRAKTIKAN')
+        
+        # 4. Bulk Create untuk efisiensi query
         new_attendances = [
             Attendance(schedule=self, user=student, status='ABSENT')
             for student in students
         ]
         Attendance.objects.bulk_create(new_attendances)
-
-    def sync_attendance_roster(self):
-        # Refresh peserta: pertahankan booking yang sudah ada, lalu tambahkan peserta baru.
-        from authentication.models import CustomUser
-
-        target_students = list(
-            CustomUser.objects.filter(kelas=self.target_class, is_staff=False)
-        )
-        target_student_ids = {student.id for student in target_students}
-
-        existing_attendances = {
-            attendance.user_id: attendance
-            for attendance in self.attendances.select_related('user').all()
-        }
-
-        attendances_to_create = []
-        for student in target_students:
-            if student.id not in existing_attendances:
-                attendances_to_create.append(
-                    Attendance(schedule=self, user=student, status='ABSENT')
-                )
-
-        if attendances_to_create:
-            Attendance.objects.bulk_create(attendances_to_create)
-
-        self.attendances.exclude(user_id__in=target_student_ids).exclude(status='BOOKED').delete()
 
 
 class Attendance(models.Model):

@@ -1,18 +1,27 @@
 :root {
-  --bg: #0b1220;
-  --bg-elevated: rgba(12, 18, 32, 0.84);
-  --surface: rgba(15, 23, 42, 0.84);
-  --surface-strong: rgba(17, 24, 39, 0.92);
-  --line: rgba(148, 163, 184, 0.16);
-  --line-strong: rgba(148, 163, 184, 0.24);
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --primary: #38bdf8;
-  --primary-deep: #0ea5e9;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #fb7185;
-  --shadow: 0 28px 70px rgba(2, 6, 23, 0.42);
+  /* Design Tokens - Warm Cream & Modern Lab Theme */
+  --bg-page: #FDF9F3;
+  --surface: #FCF8F2;
+  --surface-white: #FFFFFF;
+  --line: rgba(17, 17, 17, 0.08);
+  --line-strong: #E2DCD0;
+  
+  --text-main: #111111;
+  --muted: #666666;
+  
+  --primary-cyan: #03A9F4;
+  --primary-cream: #EFE9DC;
+  --badge-cream: #F4EEDF;
+  
+  /* Status Color Tokens (Light Mode High Contrast) */
+  --success-bg: #DCFCE7;
+  --success-text: #15803D;
+  --danger-bg: #FEE2E2;
+  --danger-text: #B91C1C;
+  --info-bg: #E0F2FE;
+  --info-text: #0369A1;
+
+  --shadow-soft: 0 10px 30px rgba(17, 17, 17, 0.05);
 }
 
 * {
@@ -26,20 +35,12 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  color: #111111;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: var(--text-main);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background:
-    radial-gradient(
-      circle at top left,
-      rgba(255, 228, 158, 0.16),
-      transparent 24%
-    ),
-    radial-gradient(
-      circle at top right,
-      rgba(196, 181, 253, 0.12),
-      transparent 22%
-    ),
-    linear-gradient(180deg, #fdfaf4 0%, #f8f3ea 100%);
+    radial-gradient(circle at top left, rgba(255, 228, 158, 0.25), transparent 28%),
+    radial-gradient(circle at top right, rgba(196, 181, 253, 0.18), transparent 25%),
+    linear-gradient(180deg, #FDFDF9 0%, var(--bg-page) 100%);
 }
 
 a {
@@ -47,10 +48,7 @@ a {
   text-decoration: none;
 }
 
-button,
-input,
-select,
-textarea {
+button, input, select, textarea {
   font: inherit;
 }
 
@@ -59,14 +57,15 @@ textarea {
   margin: 0 auto;
 }
 
+/* ================= HEADER & NAV ================= */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 10;
-  padding: 1rem 0 1.15rem;
-  background: rgba(253, 250, 244, 0.82);
+  padding: 1rem 0;
+  background: rgba(253, 249, 243, 0.85);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+  border-bottom: 1px solid var(--line);
 }
 
 .header-inner {
@@ -76,16 +75,15 @@ textarea {
   gap: 1rem;
 }
 
-/* Tiap section jadi pill terpisah sendiri-sendiri */
 .header-left,
 .nav-center,
 .header-right {
   display: flex;
   align-items: center;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 24px rgba(17, 17, 17, 0.08);
-  border: 1px solid rgba(17, 17, 17, 0.07);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--line);
 }
 
 .header-left {
@@ -94,90 +92,77 @@ textarea {
 }
 
 .nav-center {
-  padding: 0.5rem 0.6rem;
-  gap: 0.3rem;
-  flex: 0 1 auto;
+  padding: 0.4rem 0.6rem;
+  gap: 0.2rem;
 }
 
 .header-right {
-  padding: 0.5rem 0.9rem;
-  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
 }
 
-/* Status chip di kiri, sekarang gak perlu pill sendiri karena parent-nya udah pill */
 .status-chip {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  color: #0f172a;
-  font-size: 0.9rem;
-  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
 .status-dot {
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 999px;
-  background: var(--success);
+  background: var(--success-text);
 }
 
-/* Logo bulat di nav-center */
 .nav-logo {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #0f172a;
+  background: var(--text-main);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-right: 0.4rem;
+  margin-right: 0.3rem;
 }
 
 .nav-logo img {
-  width: 52%;
-  height: 52%;
+  width: 55%;
+  height: 55%;
   object-fit: contain;
   filter: invert(1);
 }
 
 .nav a {
-  padding: 0.6rem 0.9rem;
-  color: #0f172a;
+  padding: 0.5rem 0.85rem;
+  color: var(--text-main);
   font-weight: 700;
-  font-size: 0.92rem;
-  background: transparent;
-  border: none;
+  font-size: 0.875rem;
   border-radius: 999px;
   transition: background 0.18s ease;
 }
 
 .nav a:hover {
-  background: rgba(17, 17, 17, 0.05);
+  background: rgba(17, 17, 17, 0.06);
 }
 
-.header-right a {
-  color: #0f172a;
-  font-weight: 600;
-  font-size: 0.9rem;
+.header-action {
   background: transparent;
-  padding: 0;
+  border: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  cursor: pointer;
 }
 
-.main-content {
-  padding: 0 0 3rem;
-}
-
+/* ================= CARDS & BUTTONS ================= */
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 24px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-soft);
 }
 
 .button {
@@ -185,117 +170,140 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.84rem 1.15rem;
+  padding: 0.7rem 1.4rem;
   border-radius: 999px;
-  border: 1px solid transparent;
+  border: none;
   font-weight: 700;
-  transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.18s ease, transform 0.15s ease;
 }
 
 .button:hover {
-  transform: translateY(-1px);
+  opacity: 0.88;
 }
 
 .button-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-deep));
-  color: #03111f;
+  background-color: var(--primary-cyan);
+  color: var(--text-main);
 }
 
 .button-secondary {
-  background: rgba(51, 65, 85, 0.78);
-  border-color: var(--line);
-  color: var(--text);
+  background-color: var(--primary-cream);
+  color: var(--text-main);
 }
 
-.eyebrow {
-  display: inline-block;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--primary);
-  font-size: 0.75rem;
-  font-weight: 800;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.messages {
-  display: grid;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.message {
-  padding: 0.95rem 1rem;
-  border-radius: 16px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--line);
-}
-
-.message-success {
-  border-color: rgba(34, 197, 94, 0.35);
-}
-
-.message-error {
-  border-color: rgba(251, 113, 133, 0.35);
-}
-
-.message-info {
-  border-color: rgba(56, 189, 248, 0.35);
-}
-
-h1,
-h2,
-h3,
-p {
-  margin-top: 0;
-}
-
-h2,
-h3 {
-  line-height: 1.2;
-}
-
-.badge,
-.status {
+/* ================= BADGES & STATUS ================= */
+.badge, .status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.42rem 0.75rem;
+  padding: 0.35rem 0.85rem;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
 }
 
-.badge {
-  background: rgba(56, 189, 248, 0.14);
-  color: #7dd3fc;
-}
-
-.status-booked {
-  background: rgba(56, 189, 248, 0.14);
-  color: #7dd3fc;
+.badge, .status-booked {
+  background-color: var(--info-bg);
+  color: var(--info-text);
 }
 
 .status-attended {
-  background: rgba(34, 197, 94, 0.14);
-  color: #86efac;
+  background-color: var(--success-bg);
+  color: var(--success-text);
 }
 
 .status-absent {
-  background: rgba(251, 113, 133, 0.14);
-  color: #fda4af;
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
 }
 
+/* ================= POPUP TOAST NOTIFICATION ================= */
+.popup-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(17, 17, 17, 0.2);
+  pointer-events: none;
+}
+
+.popup-message {
+  width: min(92vw, 460px);
+  position: relative;
+  animation: popup-enter 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: auto;
+}
+
+.popup-message-panel {
+  position: relative;
+  padding: 3rem 1.5rem 1.5rem;
+  border-radius: 28px;
+  background: #151F31;
+  color: #FFFFFF;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.popup-message-icon {
+  position: absolute;
+  top: -2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4.8rem;
+  height: 4.8rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: var(--popup-accent, var(--primary-cyan));
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.popup-message-success { --popup-accent: #22C55E; }
+.popup-message-error { --popup-accent: #EF4444; }
+.popup-message-info, .popup-message-warning { --popup-accent: #F59E0B; }
+
+.popup-message-title {
+  margin: 0 0 0.3rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.popup-message-text {
+  margin: 0;
+  color: #CBD5E1;
+  font-size: 0.95rem;
+}
+
+.popup-message.is-hiding {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.96);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+@keyframes popup-enter {
+  from { opacity: 0; transform: translateY(16px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
 @media (max-width: 860px) {
   .header-inner {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .nav-center {
     flex-wrap: wrap;
     justify-content: center;
+    border-radius: 20px;
+    padding: 0.5rem;
   }
 }

@@ -23,39 +23,81 @@
             <img src="{% static 'assets/navbar-icon.png' %}" alt="Logo" />
           </div>
           <a href="{% url 'schedule:list' %}">Jadwal</a>
-          <a href="{% url 'schedule:create' %}">Tambah Jadwal</a>
-          <a href="/admin/">Admin</a>
+          
+          <!-- Proteksi Akses: Hanya Asisten / Admin yang melihat tombol ini -->
+          {% if user.is_staff or user.role == 'ASISTEN' %}
+            <a href="{% url 'schedule:create' %}">Tambah Jadwal</a>
+          {% endif %}
+          
+          {% if user.is_staff %}
+            <a href="/admin/">Admin</a>
+          {% endif %}
+          
           <a href="#">Kontak</a>
           <a href="#">FAQ</a>
         </nav>
 
         <div class="header-right">
           {% if user.is_authenticated %}
-          <a
-            class="status-chip header-action"
-            href="{% url 'authentication:logout' %}"
-          >
-            Logout
-          </a>
+            <!-- Safe POST Logout Form -->
+            <form action="{% url 'authentication:logout' %}" method="post" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="status-chip header-action" style="border: none; cursor: pointer;">
+                Logout
+              </button>
+            </form>
           {% else %}
-          <a
-            class="status-chip header-action"
-            href="{% url 'authentication:login' %}"
-          >
-            Login
-          </a>
+            <a class="status-chip header-action" href="{% url 'authentication:login' %}">
+              Login
+            </a>
           {% endif %}
         </div>
       </div>
     </header>
+
+    {% if messages %}
+    <div class="popup-layer" data-popup-layer aria-live="polite" aria-atomic="true">
+      {% for message in messages %}
+      <!-- Menggunakan message.level_tag untuk mencegah class terbakar -->
+      <div class="popup-message popup-message-{{ message.level_tag }}" data-popup-message>
+        <div class="popup-message-panel">
+          <div class="popup-message-icon" aria-hidden="true">
+            {% if 'success' in message.tags %}:){% elif 'error' in message.tags %}:({% elif 'warning' in message.tags %}:|{% else %}:i{% endif %}
+          </div>
+          <div class="popup-message-body">
+            <p class="popup-message-title">
+              {% if 'success' in message.tags %}Berhasil{% elif 'error' in message.tags %}Gagal{% elif 'warning' in message.tags %}Perhatian{% else %}Info{% endif %}
+            </p>
+            <p class="popup-message-text">{{ message }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <main class="container main-content">
-      {% if messages %}
-      <section class="messages">
-        {% for message in messages %}
-        <div class="message message-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </section>
-      {% endif %} {% block content %}{% endblock %}
+      {% block content %}{% endblock %}
     </main>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const popupLayer = document.querySelector("[data-popup-layer]");
+        const popupMessages = document.querySelectorAll("[data-popup-message]");
+
+        if (!popupLayer || popupMessages.length === 0) {
+          return;
+        }
+
+        // Ditingkatkan ke 3500ms (3.5 detik) agar pengguna sempat membaca pesan
+        window.setTimeout(() => {
+          popupMessages.forEach((message) => {
+            message.classList.add("is-hiding");
+          });
+
+          window.setTimeout(() => popupLayer.remove(), 300);
+        }, 3500);
+      });
+    </script>
   </body>
 </html>

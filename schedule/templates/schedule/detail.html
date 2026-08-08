@@ -16,11 +16,10 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
         <p class="muted">Kelas target: {{ schedule.target_class }}</p>
       </div>
       <div class="detail-actions">
-        <a
-          class="button button-primary"
-          href="{% url 'schedule:book' schedule.id %}"
-          >Booking sekarang</a
-        >
+        <form method="post" action="{% url 'schedule:book' schedule.id %}">
+          {% csrf_token %}
+          <button class="button button-primary" type="submit">Booking sekarang</button>
+        </form>
         {% if can_manage_schedule %}
         <form
           method="post"

@@ -1,6 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
-from .models import CustomUser
+User = get_user_model()
 
 
 class IdentifierBackend(ModelBackend):
@@ -11,16 +12,18 @@ class IdentifierBackend(ModelBackend):
         if not role or not identifier or password is None:
             return None
 
-        if role == 'praktikan':
-            lookup = {'role': 'praktikan', 'npm': identifier}
-        elif role == 'asisten':
-            lookup = {'role': 'asisten', 'assistant_id': identifier}
+        role_upper = str(role).upper()
+
+        if role_upper == User.Role.PRAKTIKAN:
+            lookup = {'role': User.Role.PRAKTIKAN, 'npm': identifier}
+        elif role_upper == User.Role.ASISTEN:
+            lookup = {'role': User.Role.ASISTEN, 'assistant_id': identifier}
         else:
             return None
 
         try:
-            user = CustomUser.objects.get(**lookup)
-        except CustomUser.DoesNotExist:
+            user = User.objects.get(**lookup)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
             return None
 
         if user.check_password(password) and self.user_can_authenticate(user):

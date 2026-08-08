@@ -92,11 +92,17 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
             href="{% url 'schedule:detail' schedule.id %}"
             >Lihat detail</a
           >
-          <a
-            class="button button-secondary"
-            href="{% url 'schedule:book' schedule.id %}"
-            >Booking</a
+
+          <form
+            action="{% url 'schedule:book' schedule.id %}"
+            method="post"
+            style="display: inline"
           >
+            {% csrf_token %}
+            <button type="submit" class="button button-secondary">
+              Booking
+            </button>
+          </form>
         </div>
       </article>
       {% empty %}

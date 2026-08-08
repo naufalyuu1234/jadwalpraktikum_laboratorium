@@ -41,9 +41,7 @@ Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
       <div class="form-field">
         <label for="id_role">Jenis Akun</label>
         {{ form.role }} {{ form.role.errors }}
-        <p class="field-hint">
-          Pilih praktikan jika ingin mengisi kelas.
-        </p>
+        <p class="field-hint">Pilih praktikan jika ingin mengisi kelas.</p>
       </div>
 
       <div class="form-field conditional-field" id="kelas-field" hidden>
@@ -88,7 +86,7 @@ Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
     }
 
     const syncKelasField = () => {
-      const isPraktikan = roleField.value === "praktikan";
+      const isPraktikan = roleField.value === "PRAKTIKAN";
       kelasField.hidden = !isPraktikan;
       kelasField.setAttribute("aria-hidden", String(!isPraktikan));
 

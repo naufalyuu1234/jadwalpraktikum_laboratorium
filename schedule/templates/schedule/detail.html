@@ -1,7 +1,13 @@
-{% extends 'schedule/base.html' %} {% load static %} {% block title %}Detail
-Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
+{% extends 'schedule/base.html' %} 
+{% load static %} 
+
+{% block title %}Detail Jadwal | Sistem Penjadwalan Praktikum{% endblock %} 
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'schedule/css/detail.css' %}" />
-{% endblock %} {% block content %}
+{% endblock %} 
+
+{% block content %}
 <div class="detail-page">
   <div class="container">
     <section class="card detail-hero">
@@ -9,46 +15,38 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
         <p class="eyebrow">{{ schedule.room }}</p>
         <h2>{{ schedule.title }}</h2>
         <p class="muted">
-          {{ schedule.start_time|date:"d M Y, H:i" }} -
-          {{schedule.end_time|date:"H:i" }}
+          {{ schedule.start_time|date:"d M Y, H:i" }} - {{ schedule.end_time|date:"H:i" }}
         </p>
-        <p class="muted">Asisten: {{ schedule.assistant }}</p>
+        <p class="muted">
+          Asisten: {{ schedule.assistant.get_full_name|default:schedule.assistant.username }}
+        </p>
         <p class="muted">Kelas target: {{ schedule.target_class }}</p>
       </div>
+
       <div class="detail-actions">
-        <a
-          class="button button-primary"
-          href="{% url 'schedule:book' schedule.id %}"
-          >Booking sekarang</a
-        >
+        <!-- Perbaikan: Mengubah tombol Booking menjadi Form POST Safe -->
+        <form action="{% url 'schedule:book' schedule.id %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="button button-primary">Booking sekarang</button>
+        </form>
+
         {% if can_manage_schedule %}
         <form
           method="post"
           action="{% url 'schedule:refresh_participants' schedule.id %}"
-          onsubmit="
-            return confirm(
-              'Refresh peserta akan menambah peserta baru dan mempertahankan booking yang sudah ada. Lanjutkan?',
-            );
-          "
+          onsubmit="return confirm('Refresh peserta akan menambah peserta baru dan mempertahankan booking yang sudah ada. Lanjutkan?');"
         >
           {% csrf_token %}
-          <button class="button button-secondary" type="submit">
-            Refresh peserta
-          </button>
+          <button class="button button-secondary" type="submit">Refresh peserta</button>
         </form>
+
         <form
           method="post"
           action="{% url 'schedule:hard_wipe' schedule.id %}"
-          onsubmit="
-            return confirm(
-              'Hard wipe akan menghapus semua attendance lalu membuat ulang dari kelas target. Lanjutkan?',
-            );
-          "
+          onsubmit="return confirm('Hard wipe akan menghapus semua attendance lalu membuat ulang dari kelas target. Lanjutkan?');"
         >
           {% csrf_token %}
-          <button class="button button-secondary" type="submit">
-            Hard wipe total
-          </button>
+          <button class="button button-secondary" type="submit">Hard wipe total</button>
         </form>
         {% endif %}
       </div>
@@ -56,26 +54,26 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
 
     <section class="card">
       <div class="section-head">
-        <h3>Daftar Booking</h3>
-        <span class="badge">{{ attendances|length }} orang</span>
+        <h3>Daftar Presensi & Booking</h3>
+        <span class="badge">{{ attendances|length }} mahasiswa</span>
       </div>
 
       <div class="attendance-list">
         {% for attendance in attendances %}
         <div class="attendance-item">
           <div>
-            <p class="attendance-kicker">Mahasiswa booking</p>
-            <strong>{{ attendance.user }}</strong>
+            <p class="attendance-kicker">
+              {% if attendance.user.npm %}NPM: {{ attendance.user.npm }}{% else %}Praktikan{% endif %}
+            </p>
+            <strong>{{ attendance.user.get_full_name|default:attendance.user.username }}</strong>
             <p class="muted">
-              {{ attendance.booking_time|default:'Belum tercatat' }}
+              Waktu Booking: {{ attendance.booking_time|date:"d M Y, H:i"|default:'Belum tercatat' }}
             </p>
           </div>
-          <span class="status status-{{ attendance.status|lower }}"
-            >{{ attendance.status }}</span
-          >
+          <span class="status status-{{ attendance.status|lower }}">{{ attendance.status }}</span>
         </div>
         {% empty %}
-        <p class="muted">Belum ada booking untuk jadwal ini.</p>
+        <p class="muted">Belum ada daftar mahasiswa untuk jadwal ini.</p>
         {% endfor %}
       </div>
     </section>

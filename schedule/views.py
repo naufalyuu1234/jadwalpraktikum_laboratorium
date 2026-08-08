@@ -1,15 +1,17 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.views.decorators.http import require_POST
-from django.utils import timezone
 from datetime import timedelta
-from .models import Schedule, Attendance
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_POST
+
 from .forms import ScheduleForm
+from .models import Attendance, Schedule
 
 
 def can_manage_schedule(user):
-    return user.is_authenticated and (user.is_staff or getattr(user, 'role', '') == 'asisten')
+    # Menggunakan property is_asisten dari CustomUser model
+    return user.is_authenticated and user.is_asisten
 
 
 def schedule_list(request):
@@ -17,6 +19,7 @@ def schedule_list(request):
     schedule_count = schedules.count()
     room_count = schedules.values('room').distinct().count()
     booking_count = Attendance.objects.count()
+
     return render(
         request,
         'schedule/list.html',
@@ -28,6 +31,8 @@ def schedule_list(request):
             'booking_count': booking_count,
         },
     )
+
+
 @login_required
 def schedule_create(request):
     if not can_manage_schedule(request.user):
@@ -89,32 +94,29 @@ def schedule_hard_wipe(request, schedule_id):
 
 
 @login_required
+@require_POST  # Wajib POST untuk mutasi data booking
 def book_practicum(request, schedule_id):
     schedule = get_object_or_404(Schedule, id=schedule_id)
     now = timezone.now()
-    
-    # Validasi Batas Waktu H-1 (Hanya untuk Mahasiswa biasa)
+
+    # Validasi Batas Waktu H-1 (Hanya untuk Mahasiswa biasa / Praktikan)
     if not request.user.is_staff:
         if schedule.start_time - now < timedelta(days=1):
             messages.error(request, "Maaf, batas waktu booking H-1 sudah lewat!")
             return redirect('schedule:detail', schedule_id=schedule.id)
-            
-    # 2. Cari data absensi mahasiswa yang sudah di-generate otomatis sebelumnya
+
     attendance = Attendance.objects.filter(schedule=schedule, user=request.user).first()
-    
-    # Jika mahasiswa kelas lain mencoba tembak URL booking secara ilegal
+
     if not attendance:
         messages.error(request, "Anda tidak terdaftar di dalam daftar kelas untuk praktikum ini!")
         return redirect('schedule:list')
-        
-    # Proses Uji Status & Update Data
+
     if attendance.status == 'BOOKED':
         messages.info(request, "Kamu sudah melakukan booking untuk sesi ini.")
     else:
-        # Ubah status dari ABSENT menjadi BOOKED
         attendance.status = 'BOOKED'
         attendance.booking_time = now
-        attendance.save() # Menyimpan perubahan status ke database
+        attendance.save()
         messages.success(request, "Booking praktikum berhasil!")
-        
+
     return redirect('schedule:detail', schedule_id=schedule.id)

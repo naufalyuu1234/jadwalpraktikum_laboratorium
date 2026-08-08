@@ -15,7 +15,8 @@ class AccountRegisterFormTests(TestCase):
 				'first_name': 'Budi',
 				'last_name': 'Santoso',
 				'email': 'budi@example.com',
-				'role': 'praktikan',
+				'role': 'PRAKTIKAN',
+				'kelas': '2IA06',
 				'identifier': '23123456',
 				'password1': 'Secret12345!',
 				'password2': 'Secret12345!',
@@ -26,7 +27,7 @@ class AccountRegisterFormTests(TestCase):
 
 		user = form.save()
 
-		self.assertEqual(user.role, 'praktikan')
+		self.assertEqual(user.role, User.Role.PRAKTIKAN)
 		self.assertEqual(user.npm, '23123456')
 		self.assertIsNone(user.assistant_id)
 		self.assertTrue(user.check_password('Secret12345!'))
@@ -37,7 +38,7 @@ class AccountRegisterFormTests(TestCase):
 				'first_name': 'Siti',
 				'last_name': 'Aulia',
 				'email': 'siti@example.com',
-				'role': 'asisten',
+				'role': 'ASISTEN',
 				'identifier': 'AS-01',
 				'password1': 'Secret12345!',
 				'password2': 'Secret12345!',
@@ -48,7 +49,7 @@ class AccountRegisterFormTests(TestCase):
 
 		user = form.save()
 
-		self.assertEqual(user.role, 'asisten')
+		self.assertEqual(user.role, User.Role.ASISTEN)
 		self.assertEqual(user.assistant_id, 'AS-01')
 		self.assertIsNone(user.npm)
 
@@ -61,7 +62,8 @@ class AccountRegisterViewTests(TestCase):
 				'first_name': 'Rina',
 				'last_name': 'Putri',
 				'email': 'rina@example.com',
-				'role': 'praktikan',
+				'role': 'PRAKTIKAN',
+				'kelas': '2IA06',
 				'identifier': '22112233',
 				'password1': 'Secret12345!',
 				'password2': 'Secret12345!',
@@ -69,4 +71,4 @@ class AccountRegisterViewTests(TestCase):
 		)
 
 		self.assertRedirects(response, reverse('authentication:login'))
-		self.assertTrue(User.objects.filter(npm='22112233', role='praktikan').exists())
+		self.assertTrue(User.objects.filter(npm='22112233', role=User.Role.PRAKTIKAN).exists())

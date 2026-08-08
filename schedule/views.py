@@ -89,6 +89,7 @@ def schedule_hard_wipe(request, schedule_id):
 
 
 @login_required
+@require_POST
 def book_practicum(request, schedule_id):
     schedule = get_object_or_404(Schedule, id=schedule_id)
     now = timezone.now()

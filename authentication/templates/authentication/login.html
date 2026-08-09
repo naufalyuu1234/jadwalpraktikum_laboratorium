@@ -18,30 +18,45 @@ Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
       </p>
     </div>
 
-    <form method="post" class="login-form">
-      {% csrf_token %} {% if form.non_field_errors %}
+    <form
+      method="post"
+      action="{% url 'authentication:login' %}"
+      class="login-form"
+    >
+      {% csrf_token %}
+
+      <input type="hidden" name="next" value="{{ next_url }}" />
+
+      {% if form.non_field_errors %}
       <div class="message message-error">{{ form.non_field_errors }}</div>
       {% endif %}
 
       <div class="form-field">
-        <label for="id_role">Jenis Akun</label>
-        {{ form.role }} {{ form.role.errors }}
+        <label for="{{ form.role.id_for_label }}">Jenis Akun</label>
+        {{ form.role }} {% if form.role.errors %}
+        <div class="field-error">{{ form.role.errors.0 }}</div>
+        {% endif %}
       </div>
 
       <div class="form-field">
-        <label for="id_identifier">NPM / ID Asisten</label>
-        {{ form.identifier }} {{ form.identifier.errors }}
+        <label for="{{ form.identifier.id_for_label }}">NPM / ID Asisten</label>
+        {{ form.identifier }} {% if form.identifier.errors %}
+        <div class="field-error">{{ form.identifier.errors.0 }}</div>
+        {% endif %}
       </div>
 
       <div class="form-field">
-        <label for="id_password">Password</label>
-        {{ form.password }} {{ form.password.errors }}
+        <label for="{{ form.password.id_for_label }}">Password</label>
+        {{ form.password }} {% if form.password.errors %}
+        <div class="field-error">{{ form.password.errors.0 }}</div>
+        {% endif %}
       </div>
 
       <button class="button button-primary login-button" type="submit">
         Masuk
       </button>
-      <p class="muted" style="text-align: center; margin: 0.25rem 0 0;">
+
+      <p class="muted" style="text-align: center; margin: 0.25rem 0 0">
         Belum punya akun?
         <a href="{% url 'authentication:register' %}">Daftar di sini</a>
       </p>

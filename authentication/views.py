@@ -7,12 +7,15 @@ from .forms import AccountRegisterForm, RoleLoginForm
 
 
 def _redirect_for_user(request, user):
-    # Cek apakah ada parameter 'next' di URL
-    next_url = request.GET.get('next') or request.POST.get('next')
-    if next_url:
+    """
+    Helper untuk mengarahkan pengguna setelah berhasil login.
+    Mendukung redirect parameter 'next' jika pengguna sebelumnya mencoba
+    mengakses halaman terproteksi.
+    """
+    next_url = request.POST.get('next') or request.GET.get('next')
+    if next_url and next_url.startswith('/'):
         return redirect(next_url)
 
-    # Redirect default berdasarkan peran pengguna
     if user.is_asisten:
         return redirect('schedule:list')
     return redirect('schedule:list')
@@ -23,6 +26,7 @@ def login_view(request):
         return _redirect_for_user(request, request.user)
 
     form = RoleLoginForm(request.POST or None)
+    next_url = request.POST.get('next') or request.GET.get('next', '')
 
     if request.method == 'POST' and form.is_valid():
         user = authenticate(
@@ -39,7 +43,7 @@ def login_view(request):
 
         messages.error(request, 'Login gagal. Periksa role, NPM/ID, dan password.')
 
-    return render(request, 'authentication/login.html', {'form': form})
+    return render(request, 'authentication/login.html', {'form': form, 'next_url': next_url})
 
 
 def register_view(request):

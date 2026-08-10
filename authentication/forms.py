@@ -41,6 +41,17 @@ class AccountRegisterForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'email', 'kelas')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Cara 2: Iterasi semua field dan suntikkan class 'form-input' otomatis
+        for field_name, field in self.fields.items():
+            existing_classes = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = f'{existing_classes} form-input'.strip()
+            
+            # Opsional: Beri placeholder otomatis jika belum ada
+            if 'placeholder' not in field.widget.attrs and field.label:
+                field.widget.attrs['placeholder'] = f'Masukkan {field.label.lower()}'
+
     def clean_identifier(self):
         identifier = self.cleaned_data.get('identifier', '').strip()
         role = self.cleaned_data.get('role', '')

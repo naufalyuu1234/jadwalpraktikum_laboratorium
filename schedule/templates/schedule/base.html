@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Sistem Penjadwalan Praktikum{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'schedule/css/base.css' %}" />
+    <!-- Perbaikan Path CSS Modal -->
+    <link rel="stylesheet" href="{% static 'schedule/css/components/modal.css' %}" />
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -26,11 +28,11 @@
 
           <!-- Proteksi Akses: Hanya Asisten / Admin yang melihat tombol ini -->
           {% if user.is_asisten %}
-            <a href="{% url 'schedule:create' %}">Tambah Jadwal</a>
+          <a href="{% url 'schedule:create' %}">Tambah Jadwal</a>
           {% endif %} 
           
           {% if user.is_staff %}
-            <a href="{% url 'admin:index' %}">Admin</a>
+          <a href="{% url 'admin:index' %}">Admin</a>
           {% endif %}
 
           <a href="#">Kontak</a>
@@ -39,57 +41,62 @@
 
         <div class="header-right">
           {% if user.is_authenticated %}
-            <!-- Safe POST Logout Form -->
-            <form action="{% url 'authentication:logout' %}" method="post" class="nav-logout-form">
-              {% csrf_token %}
-              <button type="submit" class="status-chip header-action btn-logout">
-                Logout
-              </button>
-            </form>
+          <!-- Safe POST Logout Form -->
+          <form
+            action="{% url 'authentication:logout' %}"
+            method="post"
+            class="nav-logout-form"
+          >
+            {% csrf_token %}
+            <button type="submit" class="status-chip header-action btn-logout">
+              Logout
+            </button>
+          </form>
           {% else %}
-            <a class="status-chip header-action" href="{% url 'authentication:login' %}">
-              Login
-            </a>
+          <a
+            class="status-chip header-action"
+            href="{% url 'authentication:login' %}"
+          >
+            Login
+          </a>
           {% endif %}
         </div>
       </div>
     </header>
 
     {% if messages %}
-    <div class="popup-layer" data-popup-layer aria-live="polite" aria-atomic="true">
+    <div
+      class="popup-layer"
+      data-popup-layer
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {% for message in messages %}
-      <div class="popup-message popup-message-{{ message.level_tag }}" data-popup-message>
+      <div
+        class="popup-message popup-message-{{ message.level_tag }}"
+        data-popup-message
+      >
         <div class="popup-message-panel">
-          
-          <!-- Icon Popup (Setiap tag berdiri sendiri di baris utuh) -->
+          <!-- Icon Popup -->
           <div class="popup-message-icon" aria-hidden="true">
-            {% if 'success' in message.tags %}
-              :)
-            {% elif 'error' in message.tags %}
-              :(
-            {% elif 'warning' in message.tags %}
-              :|
-            {% else %}
-              :i
+            {% if 'success' in message.tags %} :) 
+            {% elif 'error' in message.tags %} :( 
+            {% elif 'warning' in message.tags %} :| 
+            {% else %} :i 
             {% endif %}
           </div>
 
           <!-- Judul & Isi Pesan -->
           <div class="popup-message-body">
             <p class="popup-message-title">
-              {% if 'success' in message.tags %}
-                Berhasil
-              {% elif 'error' in message.tags %}
-                Gagal
-              {% elif 'warning' in message.tags %}
-                Perhatian
-              {% else %}
-                Info
+              {% if 'success' in message.tags %} Berhasil 
+              {% elif 'error' in message.tags %} Gagal 
+              {% elif 'warning' in message.tags %} Perhatian 
+              {% else %} Info 
               {% endif %}
             </p>
             <p class="popup-message-text">{{ message }}</p>
           </div>
-
         </div>
       </div>
       {% endfor %}
@@ -118,5 +125,11 @@
         }, 3500);
       });
     </script>
+
+    <!-- Perbaikan Path Include Template & Script JS Modal -->
+    {% if not user.is_authenticated and request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register' %}
+  {% include 'schedule/components/welcome_modal.html' %}
+  <script src="{% static 'js/welcome_modal.js' %}"></script>
+{% endif %}
   </body>
 </html>

@@ -1,0 +1,25 @@
+{% load static %}
+<dialog id="welcomeModal" class="welcome-modal">
+  <button type="button" class="modal-close-icon" id="closeModalBtn" aria-label="Tutup">&times;</button>
+  
+  <div class="modal-header-img">
+    <img src="{% static 'assets/profile.png' %}" alt="Welcome Poster" />
+  </div>
+
+  <div class="modal-body">
+    <h2>Selamat Datang di Portal Praktikum</h2>
+    <p class="muted">
+      Silakan masuk ke akun kamu untuk melihat jadwal laboratorium dan melakukan booking presensi.
+    </p>
+
+    <div class="modal-actions">
+      <a href="{% url 'authentication:login' %}" class="button button-primary">Login Sekarang</a>
+      <a href="{% url 'authentication:register' %}" class="button button-secondary">Daftar Akun</a>
+    </div>
+
+    <label class="checkbox-remember">
+      <input type="checkbox" id="dontShowAgain" />
+      <span>Jangan tampilkan lagi</span>
+    </label>
+  </div>
+</dialog>

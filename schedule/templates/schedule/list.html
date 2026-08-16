@@ -1,7 +1,13 @@
-{% extends 'schedule/base.html' %} {% load static %} {% block title %}Daftar
-Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
+{% extends 'schedule/base.html' %} 
+{% load static %} 
+
+{% block title %}Daftar Jadwal | Sistem Penjadwalan Praktikum{% endblock %} 
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'schedule/css/list.css' %}" />
-{% endblock %} {% block content %}
+{% endblock %} 
+
+{% block content %}
 <div class="page-shell">
   <section class="hero-layout">
     <div class="hero-copy">
@@ -46,14 +52,13 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
       </div>
     </div>
 
-    <div class="hero-visual" aria-hidden="true">
-      <div class="visual-figure">
-        <span class="visual-star visual-star-left"></span>
-        <span class="visual-star visual-star-right"></span>
-        <span class="visual-cloud"></span>
-        <span class="visual-pencil"></span>
-        <span class="visual-person"></span>
-      </div>
+    <!-- Perbaikan: Mengganti visual-figure dummy dengan asset LepkomIcon.png -->
+    <div class="hero-visual">
+      <img
+        src="{% static 'assets/LepkomIcon.png' %}"
+        alt="Logo LePKom Gunadarma"
+        class="hero-illustration"
+      />
     </div>
   </section>
 
@@ -82,7 +87,7 @@ Jadwal | Sistem Penjadwalan Praktikum{% endblock %} {% block extra_css %}
 
         <p class="muted">
           {{ schedule.start_time|date:"H:i" }} -
-          {{schedule.end_time|date:"H:i"}}
+          {{ schedule.end_time|date:"H:i" }}
         </p>
         <p class="muted">Asisten: {{ schedule.assistant }}</p>
 

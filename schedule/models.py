@@ -111,3 +111,31 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.schedule.title} ({self.status})"
+
+# FAQ MODELS
+class FAQ(models.Model):
+    question = models.CharField(
+        max_length=255,
+        help_text="Tulis pertanyaan ringkas dan jelas"
+    )
+    answer = models.TextField(
+        help_text="Jawaban lengkap"
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text="Prioritas urutan tampil (contoh: 1, 2, 3)"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Centang untuk menampilkan website"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = 'FAQ'
+        verbose_name_plural = "Daftar FAQ"
+
+    def __str__(self):
+        return f"{self.order}. {self.question}"

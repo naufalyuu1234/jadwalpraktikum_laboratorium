@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Schedule, Attendance
+from .models import Schedule, Attendance, FAQ
 
 
 class AttendanceInline(admin.TabularInline):
@@ -32,3 +32,13 @@ class AttendanceAdmin(admin.ModelAdmin):
     # Mengatasi N+1 Query Problem di Django Admin
     list_select_related = ('schedule', 'user')
     readonly_fields = ('booking_time',)
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ("order", "question", "is_active", "updated_at")
+    list_display_links = ("question",)
+    list_editable = ("order", "is_active")
+    search_fields = ("question", "answer")
+    list_filter = ("is_active", "created_at")
+    ordering = ("order", "-created_at")
+    list_per_page = 20

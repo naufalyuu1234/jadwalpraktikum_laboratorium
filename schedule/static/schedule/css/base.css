@@ -5,14 +5,14 @@
   --surface-white: #FFFFFF;
   --line: rgba(17, 17, 17, 0.08);
   --line-strong: #E2DCD0;
-  
+
   --text-main: #111111;
   --muted: #666666;
-  
+
   --primary-cyan: #03A9F4;
   --primary-cream: #EFE9DC;
   --badge-cream: #F4EEDF;
-  
+
   /* Status Color Tokens (Light Mode High Contrast) */
   --success-bg: #DCFCE7;
   --success-text: #15803D;
@@ -22,6 +22,11 @@
   --info-text: #0369A1;
 
   --shadow-soft: 0 10px 30px rgba(17, 17, 17, 0.05);
+
+  /* Motion + focus tokens (new, non-visual-theme) */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.18s ease;
+  --focus-ring: 0 0 0 3px rgba(3, 169, 244, 0.35);
 }
 
 * {
@@ -37,6 +42,9 @@ body {
   min-height: 100vh;
   color: var(--text-main);
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
   background:
     radial-gradient(circle at top left, rgba(255, 228, 158, 0.25), transparent 28%),
     radial-gradient(circle at top right, rgba(196, 181, 253, 0.18), transparent 25%),
@@ -50,11 +58,58 @@ a {
 
 button, input, select, textarea {
   font: inherit;
+  color: inherit;
+}
+
+/* ================= TYPOGRAPHY RESET (fixes inconsistent default spacing) ================= */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5em;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-main);
+}
+
+p {
+  margin: 0 0 1em;
+  color: var(--muted);
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: rgba(3, 169, 244, 0.25);
+  color: var(--text-main);
+}
+
+/* ================= ACCESSIBILITY: FOCUS STATES (were missing entirely) ================= */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 999px;
 }
 
 .container {
   width: min(1160px, calc(100% - 2rem));
   margin: 0 auto;
+}
+
+.main-content {
+  padding: 2rem 0 3rem;
+  min-height: 60vh;
 }
 
 /* ================= HEADER & NAV ================= */
@@ -89,6 +144,7 @@ button, input, select, textarea {
 .header-left {
   padding: 0.5rem 1.1rem;
   gap: 0.6rem;
+  flex-shrink: 0;
 }
 
 .nav-center {
@@ -98,6 +154,13 @@ button, input, select, textarea {
 
 .header-right {
   padding: 0.4rem 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Logout is a <form><button> while login is a plain <a> — display:contents
+   strips the form's own box so both states size/align identically */
+.nav-logout-form {
+  display: contents;
 }
 
 .status-chip {
@@ -114,6 +177,13 @@ button, input, select, textarea {
   height: 0.55rem;
   border-radius: 999px;
   background: var(--success-text);
+  flex-shrink: 0;
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.35); }
+  50% { box-shadow: 0 0 0 4px rgba(21, 128, 61, 0); }
 }
 
 .nav-logo {
@@ -135,17 +205,29 @@ button, input, select, textarea {
   filter: invert(1);
 }
 
+.nav {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .nav a {
   padding: 0.5rem 0.85rem;
   color: var(--text-main);
   font-weight: 700;
   font-size: 0.875rem;
   border-radius: 999px;
-  transition: background 0.18s ease;
+  white-space: nowrap;
+  transition: background var(--transition-base);
 }
 
 .nav a:hover {
   background: rgba(17, 17, 17, 0.06);
+}
+
+.nav a.active {
+  background: var(--text-main);
+  color: var(--surface-white);
 }
 
 .header-action {
@@ -155,6 +237,13 @@ button, input, select, textarea {
   font-size: 0.875rem;
   color: var(--text-main);
   cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  border-radius: 999px;
+  transition: opacity var(--transition-base);
+}
+
+.header-action:hover {
+  opacity: 0.7;
 }
 
 /* ================= CARDS & BUTTONS ================= */
@@ -176,11 +265,21 @@ button, input, select, textarea {
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: opacity 0.18s ease, transform 0.15s ease;
+  transition: opacity var(--transition-base), transform var(--transition-fast);
 }
 
 .button:hover {
   opacity: 0.88;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .button-primary {
@@ -194,7 +293,19 @@ button, input, select, textarea {
 }
 
 /* ================= BADGES & STATUS ================= */
-.badge, .status {
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  background-color: var(--info-bg);
+  color: var(--info-text);
+}
+
+.status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -204,7 +315,7 @@ button, input, select, textarea {
   font-weight: 800;
 }
 
-.badge, .status-booked {
+.status-booked {
   background-color: var(--info-bg);
   color: var(--info-text);
 }
@@ -259,6 +370,7 @@ button, input, select, textarea {
   border-radius: 50%;
   display: grid;
   place-items: center;
+  line-height: 1;
   font-size: 1.75rem;
   font-weight: 800;
   background: var(--popup-accent, var(--primary-cyan));
@@ -274,6 +386,7 @@ button, input, select, textarea {
   margin: 0 0 0.3rem;
   font-size: 1.5rem;
   font-weight: 800;
+  color: #FFFFFF;
 }
 
 .popup-message-text {
@@ -305,5 +418,14 @@ button, input, select, textarea {
     justify-content: center;
     border-radius: 20px;
     padding: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

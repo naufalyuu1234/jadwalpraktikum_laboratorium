@@ -11,7 +11,9 @@ urlpatterns = [
     path('<int:schedule_id>/refresh-participants/', views.schedule_refresh_participants, name='refresh_participants'),
     path('<int:schedule_id>/hard-wipe/', views.schedule_hard_wipe, name='hard_wipe'),
     path('<int:schedule_id>/book/', views.book_practicum, name='book'),
-
+    path('<int:pk>/delete/', views.schedule_delete, name='delete'),
     # API endpoints
     path('api/', include('schedule.api.urls')),
+    # FAQ Endpoints
+    path('faq/', views.faq_view, name='faq'),
 ]

@@ -7,7 +7,10 @@
     <title>{% block title %}Sistem Penjadwalan Praktikum{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'schedule/css/base.css' %}" />
     <!-- Perbaikan Path CSS Modal -->
-    <link rel="stylesheet" href="{% static 'schedule/css/components/modal.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'schedule/css/components/modal.css' %}"
+    />
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -24,31 +27,48 @@
           <div class="nav-logo">
             <img src="{% static 'assets/navbar-icon.png' %}" alt="Logo" />
           </div>
-          <a href="{% url 'schedule:list' %}">Jadwal</a>
 
-          <!-- Proteksi Akses: Hanya Asisten / Admin yang melihat tombol ini -->
+          <a
+            href="{% url 'schedule:list' %}"
+            class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}"
+            {% if request.resolver_match.url_name == 'list' %}aria-current="page"{% endif %}
+            >Jadwal</a
+          >
+
           {% if user.is_asisten %}
-          <a href="{% url 'schedule:create' %}">Tambah Jadwal</a>
-          {% endif %} 
-          
+          <a
+            href="{% url 'schedule:create' %}"
+            class="{% if request.resolver_match.url_name == 'create' %}active{% endif %}"
+            {% if request.resolver_match.url_name == 'create' %}aria-current="page"{% endif %}
+            >Tambah Jadwal</a
+          >
+          {% endif %}
+
           {% if user.is_staff %}
           <a href="{% url 'admin:index' %}">Admin</a>
           {% endif %}
 
           <a href="#">Kontak</a>
-          <a href="#">FAQ</a>
+
+          <a
+            href="{% url 'schedule:faq' %}"
+            class="{% if request.resolver_match.url_name == 'faq' %}active{% endif %}"
+            {% if request.resolver_match.url_name == 'faq' %}aria-current="page"{% endif %}
+            >FAQ</a
+          >
         </nav>
 
         <div class="header-right">
           {% if user.is_authenticated %}
-          <!-- Safe POST Logout Form -->
+          <!-- Safe POST Logout Form. .nav-logout-form uses display:contents
+               in CSS so this form doesn't add its own box in the flex row. -->
           <form
             action="{% url 'authentication:logout' %}"
             method="post"
             class="nav-logout-form"
           >
             {% csrf_token %}
-            <button type="submit" class="status-chip header-action btn-logout">
+            <button type="submit" class="status-chip header-action">
               Logout
             </button>
           </form>
@@ -79,20 +99,28 @@
         <div class="popup-message-panel">
           <!-- Icon Popup -->
           <div class="popup-message-icon" aria-hidden="true">
-            {% if 'success' in message.tags %} :) 
-            {% elif 'error' in message.tags %} :( 
-            {% elif 'warning' in message.tags %} :| 
-            {% else %} :i 
+            {% if 'success' in message.tags %}
+              :)
+            {% elif 'error' in message.tags %}
+              :(
+            {% elif 'warning' in message.tags %}
+              :|
+            {% else %}
+              :i
             {% endif %}
           </div>
 
           <!-- Judul & Isi Pesan -->
           <div class="popup-message-body">
             <p class="popup-message-title">
-              {% if 'success' in message.tags %} Berhasil 
-              {% elif 'error' in message.tags %} Gagal 
-              {% elif 'warning' in message.tags %} Perhatian 
-              {% else %} Info 
+              {% if 'success' in message.tags %}
+                Berhasil
+              {% elif 'error' in message.tags %}
+                Gagal
+              {% elif 'warning' in message.tags %}
+                Perhatian
+              {% else %}
+                Info
               {% endif %}
             </p>
             <p class="popup-message-text">{{ message }}</p>
@@ -126,10 +154,10 @@
       });
     </script>
 
-    <!-- Perbaikan Path Include Template & Script JS Modal -->
+    <!-- Welcome Modal (Hanya dimuat jika belum login & bukan di halaman login/register) -->
     {% if not user.is_authenticated and request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register' %}
-  {% include 'schedule/components/welcome_modal.html' %}
-  <script src="{% static 'js/welcome_modal.js' %}"></script>
-{% endif %}
+      {% include 'schedule/components/welcome_modal.html' %}
+      <script src="{% static 'js/welcome_modal.js' %}"></script>
+    {% endif %}
   </body>
 </html>

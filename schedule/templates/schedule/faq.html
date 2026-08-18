@@ -1,0 +1,41 @@
+{% extends 'schedule/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'schedule/css/faq.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-shell faq-shell">
+  <div class="faq-container">
+    
+    <header class="faq-header">
+      <p class="hero-kicker">Pusat Bantuan</p>
+      <h2 class="faq-title">Frequently Asked Questions</h2>
+      <p class="hero-subtitle">
+        Temukan jawaban seputar alur penjadwalan praktikum, aturan laboratorium, dan prosedur booking.
+      </p>
+    </header>
+
+    <div class="faq-accordion-group">
+      {% for faq in faqs %}
+        <details class="faq-item" {% if forloop.first %}open{% endif %}>
+          <summary class="faq-summary">
+            <span class="faq-question-text">{{ faq.question }}</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-content">
+            <p>{{ faq.answer|linebreaksbr }}</p>
+          </div>
+        </details>
+      {% empty %}
+        <div class="empty-state">
+          <h3>Belum Ada Pertanyaan</h3>
+          <p class="muted">Daftar FAQ sedang diperbarui oleh asisten laboratorium.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

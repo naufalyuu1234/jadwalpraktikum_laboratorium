@@ -33,6 +33,37 @@
   border-radius: 999px;
   pointer-events: none;
 }
+/* Button Delete */
+.delete-form {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto; 
+}
+
+.btn-icon.btn-delete {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #9ca3af; 
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-icon.btn-delete:hover {
+  color: #ef4444; 
+  background: rgba(239, 68, 68, 0.08); 
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.btn-icon.btn-delete:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+/* Button Delete End */
 .page-shell::before {
   width: 24rem;
   height: 24rem;
@@ -209,7 +240,7 @@ h2.hero-title {
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
+  gap: 3rem;
 }
 .schedule-card,
 .empty-state {
@@ -249,6 +280,14 @@ h2.hero-title {
 .grid-section .eyebrow,
 .grid-section .muted {
   color: #111111;
+}
+.muted {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: #3d3d3d;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 .card-actions {
   display: flex;
@@ -303,3 +342,5 @@ h2.hero-title {
     padding-inline: 1rem;
   }
 }
+
+

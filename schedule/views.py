@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.core.exceptions import PermissionDenied
+from .models import FAQ
 
 from .forms import ScheduleForm
 from .models import Attendance, Schedule
@@ -15,10 +17,24 @@ def can_manage_schedule(user):
 
 
 def schedule_list(request):
-    schedules = Schedule.objects.select_related('assistant').all().order_by('start_time')
+    now = timezone.now()
+
+    # 1. Ambil hanya jadwal yang belum selesai (aktif)
+    schedules = (
+        Schedule.objects.select_related('assistant')
+        .filter(end_time__gte=now)
+        .order_by('start_time')
+    )
+
+    # 2. Metrik Dashboard berdasarkan jadwal aktif
     schedule_count = schedules.count()
     room_count = schedules.values('room').distinct().count()
-    booking_count = Attendance.objects.count()
+    
+    # Hanya hitung mahasiswa yang statusnya benar-benar sudah BOOKED pada jadwal aktif
+    booking_count = Attendance.objects.filter(
+        schedule__in=schedules,
+        status=Attendance.Status.BOOKED
+    ).count()
 
     return render(
         request,
@@ -52,6 +68,25 @@ def schedule_create(request):
 
     return render(request, 'schedule/create.html', {'form': form})
 
+@login_required
+@require_POST
+def schedule_delete(request, pk):
+  schedule = get_object_or_404(Schedule, pk=pk)
+
+  # Otorisasi: Hanya asisten pemilik atau staf admin yang boleh menghapus
+  if request.user != schedule.assistant and not request.user.is_staff:
+    messages.error(
+        request, 'Anda tidak memiliki hak akses untuk menghapus jadwal ini.'
+    )
+    raise PermissionDenied
+
+  schedule_title = schedule.title
+  schedule.delete()
+
+  messages.success(
+      request, f"Jadwal praktikum '{schedule_title}' berhasil dihapus."
+  )
+  return redirect('schedule:list')
 
 def schedule_detail(request, schedule_id):
     schedule = get_object_or_404(Schedule, id=schedule_id)
@@ -120,3 +155,7 @@ def book_practicum(request, schedule_id):
         messages.success(request, "Booking praktikum berhasil!")
 
     return redirect('schedule:detail', schedule_id=schedule.id)
+
+def faq_view(request):
+  faqs = FAQ.objects.filter(is_active=True).order_by('order', '-created_at')
+  return render(request, 'schedule/faq.html', {'faqs': faqs})
